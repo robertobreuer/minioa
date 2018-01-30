@@ -12,6 +12,6 @@ package com.modelo;
 public class prueba {
   
     
-    private int test;
+    private long test;
     
 }
