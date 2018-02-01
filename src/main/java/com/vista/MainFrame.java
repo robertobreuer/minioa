@@ -33,6 +33,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -42,15 +43,19 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    static final String ACCESS_KEY  = "YEUV1UHKOTAQUB1PGQYP";
-    static final String SECRET_KEY  = "0Ivpasu9d0eE2Gn/ifqJh3zLPTrnXbv6DU2K3xWp";
+    //static final String ACCESS_KEY  = "YEUV1UHKOTAQUB1PGQYP";
+    //static final String SECRET_KEY  = "0Ivpasu9d0eE2Gn/ifqJh3zLPTrnXbv6DU2K3xWp";
+    static final String ACCESS_KEY  =   "T0A1K0W59MUNQLBK1L78";
+    static final String SECRET_KEY  =   "xAn4aOaLjQLt96T84iyWon2gkq+aeRmbw3/M31jj";
+    
     static final String URL_SERVER  = "http://localhost:9000";
     static String BUCKET="";
     static File[] archivoArray;
     static List [] bucketsArray;
     static  MinioClient minioClient;
     static DefaultListModel<String> model = new DefaultListModel<>();
-    
+    static DefaultTableModel tableModel = new DefaultTableModel();
+   
             /**
      * Creates new form MainFrame
      */
@@ -84,9 +89,8 @@ public class MainFrame extends javax.swing.JFrame {
         btnCargarArchivos = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaArchivosBucket = new javax.swing.JTable();
-        lblActualizarBucket1 = new javax.swing.JLabel();
-        lblActualizarBucket2 = new javax.swing.JLabel();
-        lblActualizarBucket3 = new javax.swing.JLabel();
+        lblSubirArchivoEnBucket = new javax.swing.JLabel();
+        lblBorrarArchivoEnBucket = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -171,30 +175,21 @@ public class MainFrame extends javax.swing.JFrame {
         tablaArchivosBucket.setCellSelectionEnabled(true);
         jScrollPane2.setViewportView(tablaArchivosBucket);
 
-        lblActualizarBucket1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lblActualizarBucket1.setText("Subir archivo");
-        lblActualizarBucket1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        lblActualizarBucket1.addMouseListener(new java.awt.event.MouseAdapter() {
+        lblSubirArchivoEnBucket.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lblSubirArchivoEnBucket.setText("Subir archivos");
+        lblSubirArchivoEnBucket.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblSubirArchivoEnBucket.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblActualizarBucket1MouseClicked(evt);
+                lblSubirArchivoEnBucketMouseClicked(evt);
             }
         });
 
-        lblActualizarBucket2.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lblActualizarBucket2.setText("Guardar archivo");
-        lblActualizarBucket2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        lblActualizarBucket2.addMouseListener(new java.awt.event.MouseAdapter() {
+        lblBorrarArchivoEnBucket.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lblBorrarArchivoEnBucket.setText("Borrar archivo");
+        lblBorrarArchivoEnBucket.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lblBorrarArchivoEnBucket.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblActualizarBucket2MouseClicked(evt);
-            }
-        });
-
-        lblActualizarBucket3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        lblActualizarBucket3.setText("Borrar archivo");
-        lblActualizarBucket3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        lblActualizarBucket3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblActualizarBucket3MouseClicked(evt);
+                lblBorrarArchivoEnBucketMouseClicked(evt);
             }
         });
 
@@ -221,12 +216,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(8, 8, 8)
-                        .addComponent(lblActualizarBucket2)
-                        .addGap(7, 7, 7)
-                        .addComponent(lblActualizarBucket3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lblActualizarBucket1))
+                        .addComponent(lblBorrarArchivoEnBucket)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblSubirArchivoEnBucket))
                     .addComponent(jScrollPane2)
                     .addComponent(txPath))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -249,9 +241,8 @@ public class MainFrame extends javax.swing.JFrame {
                                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(lblActualizarBucket1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblActualizarBucket2, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lblActualizarBucket3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(lblSubirArchivoEnBucket, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lblBorrarArchivoEnBucket, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(131, 131, 131)
                         .addComponent(btnCargarArchivos)))
@@ -364,10 +355,15 @@ public class MainFrame extends javax.swing.JFrame {
         }      
     }
     
-    void resetModel(){
+    void resetListModel(){
      model.removeAllElements();
+     
     }
     
+    void resetTableModel(){
+        tableModel.setRowCount(0);
+       tableModel.setColumnCount(0);
+    }
     void crearBucket(){
         String bucketNuevo= JOptionPane.showInputDialog(null, "Ingrese nombre de bucket ");
         
@@ -395,7 +391,7 @@ public class MainFrame extends javax.swing.JFrame {
                nombreBucket  =listBuckets.getSelectedValue();
             minioClient.removeBucket(nombreBucket);
             JOptionPane.showMessageDialog(null, nombreBucket+" borrado correctamente!" );
-            resetModel();
+            resetListModel();
             mostrarLista();
         }else {
                     }
@@ -410,7 +406,7 @@ public class MainFrame extends javax.swing.JFrame {
              if(JOptionPane.OK_OPTION==eleccion){
             minioClient.removeBucket(nombreBucket);
             JOptionPane.showMessageDialog(null, nombreBucket+" borrado correctamente!" );
-            resetModel();
+            resetListModel();
             mostrarLista();
             }else{
             }
@@ -425,7 +421,7 @@ public class MainFrame extends javax.swing.JFrame {
     void mostrarArchivosDeBucket(String nombreBucket){
         try{
             Iterable<Result<Item>> myObjects = minioClient.listObjects(nombreBucket);
-            DefaultTableModel tableModel = new DefaultTableModel();
+            
             TableColumnModel tcm = tablaArchivosBucket.getColumnModel();
                      
             tableModel.addColumn("Nombre de archivo");
@@ -481,9 +477,10 @@ public class MainFrame extends javax.swing.JFrame {
     }
     
     
+    
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
        crearBucket();
-       resetModel();
+       resetListModel();
        mostrarLista();       
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
@@ -497,18 +494,18 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnCargarArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivosActionPerformed
         String nombreBucket = listBuckets.getSelectedValue();
-        
+        resetTableModel();
         mostrarArchivosDeBucket(nombreBucket);
     }//GEN-LAST:event_btnCargarArchivosActionPerformed
 
     private void lblNuevoBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblNuevoBucketMouseClicked
         crearBucket();
-        resetModel();
+        resetListModel();
         mostrarLista();
     }//GEN-LAST:event_lblNuevoBucketMouseClicked
 
     private void lblActualizarBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblActualizarBucketMouseClicked
-        resetModel();
+        resetListModel();
         mostrarLista();
     }//GEN-LAST:event_lblActualizarBucketMouseClicked
 
@@ -526,17 +523,21 @@ public class MainFrame extends javax.swing.JFrame {
         borrarBucketMenus(nombreBucket);
     }//GEN-LAST:event_menuBorrarBucketActionPerformed
 
-    private void lblActualizarBucket1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblActualizarBucket1MouseClicked
+    private void lblSubirArchivoEnBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblSubirArchivoEnBucketMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_lblActualizarBucket1MouseClicked
+    }//GEN-LAST:event_lblSubirArchivoEnBucketMouseClicked
 
-    private void lblActualizarBucket2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblActualizarBucket2MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_lblActualizarBucket2MouseClicked
-
-    private void lblActualizarBucket3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblActualizarBucket3MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_lblActualizarBucket3MouseClicked
+    private void lblBorrarArchivoEnBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblBorrarArchivoEnBucketMouseClicked
+      //String data [] = new String[3];
+     List<String> data ;
+      data  =   (List<String>) tableModel.getDataVector().elementAt(tablaArchivosBucket.getSelectedRow());
+        
+        System.out.println(data.get(0));
+    try{
+        minioClient.removeObject(listBuckets.getSelectedValue() , data.get(0));
+    }catch(Exception e){}
+   
+    }//GEN-LAST:event_lblBorrarArchivoEnBucketMouseClicked
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
       LogsDialog lf = new LogsDialog(this, true);
@@ -614,11 +615,10 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JLabel lblActualizarBucket;
-    private javax.swing.JLabel lblActualizarBucket1;
-    private javax.swing.JLabel lblActualizarBucket2;
-    private javax.swing.JLabel lblActualizarBucket3;
+    private javax.swing.JLabel lblBorrarArchivoEnBucket;
     private javax.swing.JLabel lblBorrarBucket;
     private javax.swing.JLabel lblNuevoBucket;
+    private javax.swing.JLabel lblSubirArchivoEnBucket;
     private javax.swing.JList<String> listBuckets;
     private javax.swing.JMenuItem menuBorrarBucket;
     private javax.swing.JTable tablaArchivosBucket;
