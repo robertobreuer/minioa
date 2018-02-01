@@ -6,7 +6,8 @@
 package com.vista;
 
 
-import static com.vista.MainFrame.minioClient;
+import com.modelo.conexion.ConexionMinio;
+
 import io.minio.MinioClient;
 import io.minio.messages.Bucket;
 import java.util.List;
@@ -30,9 +31,9 @@ static DefaultListModel<String> model = new DefaultListModel<>();
 
     void cargarCombo(){
         try{
-            minioClient = new MinioClient(MainFrame.URL_SERVER, MainFrame.ACCESS_KEY, MainFrame.SECRET_KEY);
+            ConexionMinio.minioClient = new MinioClient(ConexionMinio.URL_SERVER, ConexionMinio.ACCESS_KEY, ConexionMinio.SECRET_KEY);
         
-            List<Bucket> bucketList = minioClient.listBuckets();
+            List<Bucket> bucketList = ConexionMinio.minioClient.listBuckets();
            
             for (Bucket bucket : bucketList) {           
                model.addElement(bucket.name());
