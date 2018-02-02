@@ -5,6 +5,7 @@
  */
 package com.modelo;
 
+import com.modelo.conexion.ConexionMinio;
 import com.vista.MainFrame;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -14,6 +15,7 @@ import io.minio.errors.NoResponseException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import javax.swing.JOptionPane;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -22,7 +24,11 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class Main {
     public static void main (String[]args) throws InvalidBucketNameException, NoSuchAlgorithmException, InsufficientDataException, IOException, InvalidKeyException, NoResponseException, XmlPullParserException, ErrorResponseException, InternalException{
-    MainFrame mf;
+//            
+//        ConexionMinio.ACCESS_KEY= JOptionPane.showInputDialog(null,"INGRESE ACCESS KEY");
+//        ConexionMinio.SECRET_KEY= JOptionPane.showInputDialog(null,"INGRESE SECRET KEY");
+   
+        MainFrame mf;
         mf = new MainFrame();
     }
 }

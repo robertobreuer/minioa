@@ -9,10 +9,16 @@ package com.vista;
 import com.modelo.conexion.ConexionMinio;
 
 import io.minio.MinioClient;
+import io.minio.Result;
 import io.minio.messages.Bucket;
+import io.minio.messages.Item;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -27,23 +33,47 @@ public class LogsDialog extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
     }
+    static DefaultTableModel tableModelLogs = new DefaultTableModel();
+    
 static DefaultListModel<String> model = new DefaultListModel<>();
 
-    void cargarCombo(){
+   
+    
+    void cargarTablaLogs(){
         try{
-            ConexionMinio.minioClient = new MinioClient(ConexionMinio.URL_SERVER, ConexionMinio.ACCESS_KEY, ConexionMinio.SECRET_KEY);
+            
+            Iterable<Result<Item>> myObjects = ConexionMinio.minioClient.listObjects(MainFrame.nombreBucket);
+            TableColumnModel tcm = tablaLogs.getColumnModel();
+            tableModelLogs.addColumn("Nombre de archivo");
+            tableModelLogs.addColumn("Tamaño");
+            tableModelLogs.addColumn("Ultima modificación");
+            
+            
+            
+            for(Result<Item> result : myObjects){
+               Item item = result.get();
+                 String fila [] = new String[3];
+                   
+                fila[0]= String.valueOf(item.objectName());
+                fila[1]= String.valueOf(item.size());
+                fila[2]=String.valueOf(item.lastModified());
+                
         
-            List<Bucket> bucketList = ConexionMinio.minioClient.listBuckets();
-           
-            for (Bucket bucket : bucketList) {           
-               model.addElement(bucket.name());
-               //System.out.println("print model: \n"+model);
-               //listBuckets.setModel(model);
-              // System.out.println("print: "+bucket.creationDate() + ", " + bucket.name());
-            comboBuckets.setModel((ComboBoxModel<String>) model);
+    
+      //trae datos de array desde la base de datos
+                    for(int i=0;i<fila.length;i++){
+                       Object[] rows = {fila[0], fila[1], fila[2]};
+                 //   System.out.println("print for:  "+fila[0]+","+ fila[1]+","+ fila[2]);  
+                      tableModelLogs.addRow(rows);
+                      System.out.println(Arrays.toString(rows));
+       
+       
+                    }
+    tablaLogs.setModel(tableModelLogs);
             }
-             } catch (Exception e) {  
-        } 
+            
+        }catch(Exception e){
+        }
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -56,15 +86,12 @@ static DefaultListModel<String> model = new DefaultListModel<>();
 
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaLogs = new javax.swing.JTable();
-        comboBuckets = new javax.swing.JComboBox<>();
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem3 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -86,26 +113,22 @@ static DefaultListModel<String> model = new DefaultListModel<>();
         ));
         jScrollPane1.setViewportView(tablaLogs);
 
-        comboBuckets.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        comboBuckets.setToolTipText("Seleccionar bucket");
-
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Logs de Sistema");
 
         jMenu1.setText("Archivo");
-
-        jMenuItem1.setText("Elegir bucket");
-        jMenu1.add(jMenuItem1);
         jMenu1.add(jSeparator2);
 
-        jMenuItem3.setText("Salir");
+        jMenuItem3.setText("Cerrar");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
         jMenu1.add(jSeparator1);
 
         jMenuBar1.add(jMenu1);
-
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -117,8 +140,7 @@ static DefaultListModel<String> model = new DefaultListModel<>();
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(comboBuckets, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jLabel1)
                         .addGap(169, 169, 169))
                     .addGroup(layout.createSequentialGroup()
@@ -129,9 +151,7 @@ static DefaultListModel<String> model = new DefaultListModel<>();
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(comboBuckets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -141,8 +161,14 @@ static DefaultListModel<String> model = new DefaultListModel<>();
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-       cargarCombo();
+        cargarTablaLogs();
+       System.out.print(MainFrame.nombreBucket);
     }//GEN-LAST:event_formWindowOpened
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        this.hide();
+        
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -187,12 +213,9 @@ static DefaultListModel<String> model = new DefaultListModel<>();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<String> comboBuckets;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPopupMenu.Separator jSeparator1;

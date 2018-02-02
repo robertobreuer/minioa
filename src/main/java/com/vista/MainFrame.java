@@ -6,36 +6,28 @@
 package com.vista;
 
 import com.modelo.FilesUploader;
+import com.modelo._Bucket;
 import com.modelo.conexion.ConexionMinio;
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
 import io.minio.MinioClient;
 import io.minio.Result;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
 import io.minio.errors.InvalidBucketNameException;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
 import io.minio.errors.NoResponseException;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
 import java.awt.PopupMenu;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import javax.swing.ListModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -49,14 +41,14 @@ public class MainFrame extends javax.swing.JFrame {
     static String nombreBucket;
     static DefaultListModel<String> model = new DefaultListModel<>();
     static DefaultTableModel tableModel = new DefaultTableModel();
- 
+    _Bucket classBucket = new _Bucket();
             /**
      * Creates new form MainFrame
      */
     public MainFrame() throws InvalidBucketNameException, NoSuchAlgorithmException, InsufficientDataException, IOException, InvalidKeyException, NoResponseException, XmlPullParserException, ErrorResponseException, InternalException {
-        initComponents();
-        this.setVisible(true);
-        this.setLocationRelativeTo(null);       
+            initComponents();
+            this.setVisible(true);
+            this.setLocationRelativeTo(null);       
         
         
     }
@@ -70,6 +62,7 @@ public class MainFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        popLogs = new javax.swing.JPopupMenu();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         lblNuevoBucket = new javax.swing.JLabel();
@@ -344,20 +337,21 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    void mostrarLista(){
-         try{
+    void mostrarListaBuckets(){
+           try{
+            // crea obejto cliente de minio con valores de la clase ConexionMinio.java
             ConexionMinio.minioClient = new MinioClient(ConexionMinio.URL_SERVER, ConexionMinio.ACCESS_KEY, ConexionMinio.SECRET_KEY);
-        
+            // crea lista con bucket
             List<Bucket> bucketList = ConexionMinio.minioClient.listBuckets();
            
-            for (Bucket bucket : bucketList) {           
+            for (Bucket bucket : bucketList) {     // recorre List para almacenar en objeto bucket      
                model.addElement(bucket.name());
                System.out.println("print model: \n"+model);
                listBuckets.setModel(model);
               // System.out.println("print: "+bucket.creationDate() + ", " + bucket.name());
                }
              } catch (Exception e) {  
-        }      
+        }    
     }
     
     void resetListModel(){
@@ -366,38 +360,22 @@ public class MainFrame extends javax.swing.JFrame {
     }
     
     void resetTableModel(){
+        // resetea el modelo de la tabla
        tableModel.setRowCount(0);
        tableModel.setColumnCount(0);
     }
-    void crearBucket(){
-        String bucketNuevo= JOptionPane.showInputDialog(null, "Ingrese nombre de bucket ");
-        
-        try {
-            // Create bucket if it doesn't exist.
-            boolean found = ConexionMinio.minioClient.bucketExists(bucketNuevo);
-            if (found) {
-                System.out.println(bucketNuevo+" un bucket ya existe con ese nombre");
-            } else {
-                // Create bucket 'my-bucketname'.
-                ConexionMinio.minioClient.makeBucket(bucketNuevo);
-                JOptionPane.showMessageDialog(null, bucketNuevo+ "  creado correctamente!");
-            }
-        } catch (Exception e) {
-            System.out.println("print error: " + e);
-        }
+    void crearBucket(){     
     }
     
-    void borrarBucketLista(String nombreBucket){
-    
-        try{
-            
+    void borrarBucketLista(String nombreBucket){    
+        try{            
            int eleccion= JOptionPane.showConfirmDialog(null, "Seguro de borrar bucket:   "+nombreBucket, "Confirmar borrado",JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
             if(JOptionPane.OK_OPTION==eleccion){
-               nombreBucket  =listBuckets.getSelectedValue();
+            nombreBucket  =listBuckets.getSelectedValue();
             ConexionMinio.minioClient.removeBucket(nombreBucket);
             JOptionPane.showMessageDialog(null, nombreBucket+" borrado correctamente!" );
             resetListModel();
-            mostrarLista();
+            mostrarListaBuckets();
         }else {
                     }
         }catch(Exception e){}
@@ -412,7 +390,7 @@ public class MainFrame extends javax.swing.JFrame {
             ConexionMinio.minioClient.removeBucket(nombreBucket);
             JOptionPane.showMessageDialog(null, nombreBucket+" borrado correctamente!" );
             resetListModel();
-            mostrarLista();
+            mostrarListaBuckets();
             }else{
             }
             }else{
@@ -433,11 +411,6 @@ public class MainFrame extends javax.swing.JFrame {
             tableModel.addColumn("Tamaño");
             tableModel.addColumn("Ultima modificación"); 
               
-
-//            tcm.getColumn(0).setPreferredWidth(150);
-//            tcm.getColumn(1).setPreferredWidth(75);
-//            tcm.getColumn(2).setPreferredWidth(150);
-//            tablaArchivosBucket.setColumnModel(tcm);
             tablaArchivosBucket.setModel(tableModel);
             //tablaArchivosBucket.set
                         
@@ -445,32 +418,19 @@ public class MainFrame extends javax.swing.JFrame {
             for (Result<Item> result : myObjects) {
                 
                 Item item = result.get();   
-            // System.out.println("print basic: "+result);
-                 String fila [] = new String[3];
+                String fila [] = new String[3];
                    
                 fila[0]= String.valueOf(item.objectName());
                 fila[1]= String.valueOf(item.size());
                 fila[2]=String.valueOf(item.lastModified());
                 
-                tableModel.addRow(fila);
-                //**********************************
-                // trae datos de array desde la base de datos
-//                for(int i=0;i<fila.length;i++){
-//                   Object[] rows = {fila[0], fila[1], fila[2]};
-//             //   System.out.println("print for:  "+fila[0]+","+ fila[1]+","+ fila[2]);  
-//                    tableModel.addRow(rows);
-//   System.out.println(Arrays.toString(rows));
-//                }
-//**********************************************
-                             
-                
-               // System.out.println(item.lastModified() + ", " + item.size() + ", " + item.objectName());
-                    
+                tableModel.addRow(fila);         
+                                             
+               // System.out.println(item.lastModified() + ", " + item.size() + ", " + item.objectName());                 
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-    
     }
     
     void verLogs(){
@@ -486,7 +446,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
        crearBucket();
        resetListModel();
-       mostrarLista();       
+       mostrarListaBuckets();       
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
@@ -494,7 +454,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-       mostrarLista();
+       mostrarListaBuckets();
     }//GEN-LAST:event_formWindowOpened
 
     private void btnCargarArchivosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarArchivosActionPerformed
@@ -504,14 +464,15 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCargarArchivosActionPerformed
 
     private void lblNuevoBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblNuevoBucketMouseClicked
-        crearBucket();
+        String nombreBucketNuevo= JOptionPane.showInputDialog(null, "Ingrese nombre de bucket ");
+        classBucket.crearBucket(nombreBucketNuevo);
         resetListModel();
-        mostrarLista();
+        mostrarListaBuckets();
     }//GEN-LAST:event_lblNuevoBucketMouseClicked
 
     private void lblActualizarBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblActualizarBucketMouseClicked
         resetListModel();
-        mostrarLista();
+        mostrarListaBuckets();
     }//GEN-LAST:event_lblActualizarBucketMouseClicked
 
     private void lblBorrarBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblBorrarBucketMouseClicked
@@ -523,9 +484,9 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_lblBorrarBucketMouseClicked
 
     private void menuBorrarBucketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBorrarBucketActionPerformed
-         nombreBucket=JOptionPane.showInputDialog(null,"Ingrese nombre de bucket");
+           nombreBucket=JOptionPane.showInputDialog(null,"Ingrese nombre de bucket");
         
-        borrarBucketMenus(nombreBucket);
+           borrarBucketMenus(nombreBucket);
     }//GEN-LAST:event_menuBorrarBucketActionPerformed
 
     private void lblSubirArchivoEnBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblSubirArchivoEnBucketMouseClicked
@@ -555,17 +516,18 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_lblBorrarArchivoEnBucketMouseClicked
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-         LogsDialog lf = new LogsDialog(this, true);
-         lf.setVisible(true);
-         lf.setLocationRelativeTo(null);
+        nombreBucket= listBuckets.getSelectedValue();
+        LogsDialog lf = new LogsDialog(this, true);
+        lf.setVisible(true);
+        lf.setLocationRelativeTo(null);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void listBucketsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listBucketsMouseClicked
-        if(evt.getButton()==MouseEvent.BUTTON3){
+        if(evt.getButton()==MouseEvent.BUTTON1){
             nombreBucket=listBuckets.getSelectedValue();
-            PopupMenu pop = new PopupMenu();
+            //PopupMenu pop = new PopupMenu();
 
-            pop.add("Mostrar logs");
+           
 
         }
 
@@ -641,6 +603,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel lblSubirArchivoEnBucket;
     private javax.swing.JList<String> listBuckets;
     private javax.swing.JMenuItem menuBorrarBucket;
+    private javax.swing.JPopupMenu popLogs;
     private javax.swing.JTable tablaArchivosBucket;
     private javax.swing.JTextField txPath;
     // End of variables declaration//GEN-END:variables
