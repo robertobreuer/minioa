@@ -8,23 +8,16 @@ package com.vista;
 
 import com.modelo.conexion.ConexionMinio;
 import com.modelo.conexion.ConexionMysql;
-import static com.vista.MainFrame.model;
-import io.minio.MinioClient;
 import io.minio.Result;
-import io.minio.messages.Bucket;
 import io.minio.messages.Item;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
 
 /**
  *

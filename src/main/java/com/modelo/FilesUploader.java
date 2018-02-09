@@ -18,8 +18,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class FilesUploader {
 
-        static File[] archivoArray;
-        static String BUCKET="pdf";
+        private File[] archivoArray;
+        private String BUCKET="pdf";
     
    public void cargarArchivosEnBucket(String nombreBucket){
            try{

@@ -18,7 +18,6 @@ import io.minio.errors.InvalidBucketNameException;
 import io.minio.errors.NoResponseException;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
-import java.awt.PopupMenu;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -39,10 +38,11 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class MainFrame extends javax.swing.JFrame {  
     
-    static List [] bucketsArray;
+    List [] bucketsArray;
     static String nombreBucket;
-    static DefaultListModel<String> model = new DefaultListModel<>();
-    static DefaultTableModel tableModel = new DefaultTableModel();
+    DefaultListModel<String> model = new DefaultListModel<>();
+    DefaultTableModel tableModel = new DefaultTableModel();
+    ConexionMinio conn_minio = new ConexionMinio();
     _Bucket classBucket = new _Bucket();
             /**
      * Creates new form MainFrame
@@ -342,7 +342,7 @@ public class MainFrame extends javax.swing.JFrame {
     void mostrarListaBuckets(){
            try{
             // crea obejto cliente de minio con valores de la clase ConexionMinio.java
-            ConexionMinio.minioClient = new MinioClient(ConexionMinio.URL_SERVER, ConexionMinio.ACCESS_KEY, ConexionMinio.SECRET_KEY);
+            ConexionMinio.minioClient = new MinioClient(conn_minio.getUrlServer(), conn_minio.getAccessKey(), conn_minio.getSecretKey());
             // crea lista con bucket
             List<Bucket> bucketList = ConexionMinio.minioClient.listBuckets();
            
@@ -366,6 +366,7 @@ public class MainFrame extends javax.swing.JFrame {
        tableModel.setRowCount(0);
        tableModel.setColumnCount(0);
     }
+   
     void crearBucket(){     
     }
     
@@ -522,7 +523,8 @@ public class MainFrame extends javax.swing.JFrame {
             resetTableModel();
              mostrarArchivosDeBucket(nombreBucket);
         }catch(Exception e){}
-   
+        resetTableModel();
+        mostrarArchivosDeBucket(nombreBucket);
     }//GEN-LAST:event_lblBorrarArchivoEnBucketMouseClicked
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed

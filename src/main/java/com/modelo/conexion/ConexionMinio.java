@@ -13,9 +13,21 @@ import io.minio.MinioClient;
  */
 public class ConexionMinio {
     
-    public static String ACCESS_KEY  =   "T0A1K0W59MUNQLBK1L78";
-    public static String SECRET_KEY  =   "xAn4aOaLjQLt96T84iyWon2gkq+aeRmbw3/M31jj";    
-    public static final String URL_SERVER  =    "http://localhost:9000";
+    private final String ACCESS_KEY  =   "T0A1K0W59MUNQLBK1L78";
+    private final String SECRET_KEY  =   "xAn4aOaLjQLt96T84iyWon2gkq+aeRmbw3/M31jj";    
+    private final String URL_SERVER  =    "http://localhost:9000";
     
     public static  MinioClient minioClient;
+    
+    public String getAccessKey(){
+        return ACCESS_KEY;
+    }
+    
+    public String getSecretKey(){
+        return SECRET_KEY;
+    }
+
+    public String getUrlServer(){
+        return URL_SERVER;
+    }
 }

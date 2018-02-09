@@ -5,7 +5,6 @@
  */
 package com.modelo;
 
-import com.modelo.conexion.ConexionMysql;
 import com.vista.MainFrame;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -27,9 +26,8 @@ public class Main {
 //        ConexionMinio.ACCESS_KEY= JOptionPane.showInputDialog(null,"INGRESE ACCESS KEY");
 //        ConexionMinio.SECRET_KEY= JOptionPane.showInputDialog(null,"INGRESE SECRET KEY");
    
-       
-        MainFrame mf;
-        mf = new MainFrame();
+    MainFrame mf;
+    mf = new MainFrame();
 
         
     }
