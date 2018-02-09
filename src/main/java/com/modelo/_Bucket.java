@@ -31,9 +31,11 @@ public class _Bucket {
         }
     }
     
-    public void mostrarListaBuckets(){
+    public void crearEventoBucketNuevo(String nombreBucketNuevo){
         
     }
+    
+  
     
     
 }

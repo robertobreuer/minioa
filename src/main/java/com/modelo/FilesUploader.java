@@ -55,15 +55,15 @@ public class FilesUploader {
 			    	 	//System.out.println("\n "+rutaArray);
 			    	 	//File archivo = fc.getSelectedFile();
 			    	 	//minioClient.putObject(BUCKET, fc.getName() , ruta);
-			     		ConexionMinio.minioClient.putObject(BUCKET, archivoArray[i].getName(), archivoArray[i].getPath());
+			     		ConexionMinio.minioClient.putObject(nombreBucket, archivoArray[i].getName(), archivoArray[i].getPath());
 			    	 		
-			     		System.out.println(archivoArray[i].getPath()+" subido correctamente a bucket: "+BUCKET);
-			     				     		//DesktopNotify.showDesktopMessage(archivoArray[i].getName(),"Subido correctamente a bucket "+BUCKET,  DesktopNotify.SUCCESS ,3600);			     		
+			     		System.out.println(archivoArray[i].getPath()+" subido correctamente a bucket: "+nombreBucket);
+			     				     		//DesktopNotify.showDesktopMessage(archivoArray[i].getName(),"Subido correctamente a bucket "+nombreBucket,  DesktopNotify.SUCCESS ,3600);			     		
 			     			
 			    	 
 			     		JOptionPane.showMessageDialog(null, "Hecho! "+
 			     				"\n"+"Archivo: "+archivoArray[i].getName()+
-			     				"\n"+"Bucket: "+BUCKET
+			     				"\n"+"Bucket: "+nombreBucket
 			     				);
 			     	
 			     	}	 	 

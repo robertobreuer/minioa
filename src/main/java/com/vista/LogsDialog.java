@@ -7,15 +7,21 @@ package com.vista;
 
 
 import com.modelo.conexion.ConexionMinio;
-
+import com.modelo.conexion.ConexionMysql;
+import static com.vista.MainFrame.model;
 import io.minio.MinioClient;
 import io.minio.Result;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -31,15 +37,32 @@ public class LogsDialog extends javax.swing.JDialog {
      */
     public LogsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        initComponents();
+        initComponents();        
     }
     static DefaultTableModel tableModelLogs = new DefaultTableModel();
-    
-static DefaultListModel<String> model = new DefaultListModel<>();
+    static ConexionMysql conn_mysql = new ConexionMysql();
+    static DefaultListModel<String> model = new DefaultListModel<>();
 
-   
-    
+    void cargarTablaLogsQuery(String nombreBucket) throws SQLException{        
+        
+        conn_mysql.selectTableMinio_pdf_copy(nombreBucket);
+        tableModelLogs.addColumn("Id");
+        tableModelLogs.addColumn("Nombre de archivo");
+        tableModelLogs.addColumn("Fecha de subida");
+       
+        while(ConexionMysql.rs.next()){
+           // Object [] fila = new Object[3];
+            String [] fila = new String [3];
+            for (int i=0;i<3;i++){
+                fila[i] = String.valueOf( ConexionMysql.rs.getObject(i+1) ); // El primer indice en rs es el 1, no el cero, por eso se suma 1.
+            }
+            tableModelLogs.addRow(fila);
+            tablaLogs.setModel(tableModelLogs);
+        }
+      }
+ 
     void cargarTablaLogs(){
+        
         try{
             
             Iterable<Result<Item>> myObjects = ConexionMinio.minioClient.listObjects(MainFrame.nombreBucket);
@@ -57,9 +80,7 @@ static DefaultListModel<String> model = new DefaultListModel<>();
                 fila[0]= String.valueOf(item.objectName());
                 fila[1]= String.valueOf(item.size());
                 fila[2]=String.valueOf(item.lastModified());
-                
-        
-    
+         
       //trae datos de array desde la base de datos
                     for(int i=0;i<fila.length;i++){
                        Object[] rows = {fila[0], fila[1], fila[2]};
@@ -69,11 +90,22 @@ static DefaultListModel<String> model = new DefaultListModel<>();
        
        
                     }
-    tablaLogs.setModel(tableModelLogs);
+            tablaLogs.setModel(tableModelLogs);
             }
             
         }catch(Exception e){
         }
+    }
+    
+    void resetListModel(){
+     model.removeAllElements();
+     
+    }
+    
+    void resetTableModel(){
+        // resetea el modelo de la tabla
+       tableModelLogs.setRowCount(0);
+       tableModelLogs.setColumnCount(0);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -100,6 +132,7 @@ static DefaultListModel<String> model = new DefaultListModel<>();
             }
         });
 
+        tablaLogs.setAutoCreateRowSorter(true);
         tablaLogs.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {},
@@ -137,15 +170,13 @@ static DefaultListModel<String> model = new DefaultListModel<>();
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel1)
-                        .addGap(169, 169, 169))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 528, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(201, 201, 201)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,16 +184,23 @@ static DefaultListModel<String> model = new DefaultListModel<>();
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+                .addGap(20, 20, 20))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        cargarTablaLogs();
-       System.out.print(MainFrame.nombreBucket);
+       resetTableModel();
+       conn_mysql.conectar();
+        try {           
+            cargarTablaLogsQuery(MainFrame.nombreBucket);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "No hay logs disponibles para buket: "+ MainFrame.nombreBucket );
+            Logger.getLogger(LogsDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            //System.out.print(MainFrame.nombreBucket);
     }//GEN-LAST:event_formWindowOpened
 
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed

@@ -8,6 +8,7 @@ package com.vista;
 import com.modelo.FilesUploader;
 import com.modelo._Bucket;
 import com.modelo.conexion.ConexionMinio;
+import com.modelo.conexion.ConexionMysql;
 import io.minio.MinioClient;
 import io.minio.Result;
 import io.minio.errors.ErrorResponseException;
@@ -22,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -468,6 +470,14 @@ public class MainFrame extends javax.swing.JFrame {
         classBucket.crearBucket(nombreBucketNuevo);
         resetListModel();
         mostrarListaBuckets();
+        
+        // crear tabla para almacenar logs de bucekt
+        try{
+        ConexionMysql conn_mysql = new ConexionMysql();
+        conn_mysql.createTableBucket(nombreBucketNuevo);
+        }catch(SQLException sqle){}    
+        //crear evento en el server para almacenar bucket
+        
     }//GEN-LAST:event_lblNuevoBucketMouseClicked
 
     private void lblActualizarBucketMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblActualizarBucketMouseClicked
@@ -518,6 +528,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         nombreBucket= listBuckets.getSelectedValue();
         LogsDialog lf = new LogsDialog(this, true);
+       
         lf.setVisible(true);
         lf.setLocationRelativeTo(null);
     }//GEN-LAST:event_jMenuItem2ActionPerformed

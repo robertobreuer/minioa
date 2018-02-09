@@ -5,7 +5,7 @@
  */
 package com.modelo;
 
-import com.modelo.conexion.ConexionMinio;
+import com.modelo.conexion.ConexionMysql;
 import com.vista.MainFrame;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -15,7 +15,6 @@ import io.minio.errors.NoResponseException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import javax.swing.JOptionPane;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -28,7 +27,10 @@ public class Main {
 //        ConexionMinio.ACCESS_KEY= JOptionPane.showInputDialog(null,"INGRESE ACCESS KEY");
 //        ConexionMinio.SECRET_KEY= JOptionPane.showInputDialog(null,"INGRESE SECRET KEY");
    
+       
         MainFrame mf;
         mf = new MainFrame();
+
+        
     }
 }
